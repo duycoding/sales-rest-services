@@ -26,4 +26,44 @@ public class Invoice {
     private List<Goods> goodsList;
 
     private Double totalAmount;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Buyer getBuyer() {
+        return buyer;
+    }
+
+    public void setBuyer(Buyer buyer) {
+        this.buyer = buyer;
+    }
+
+    public Seller getSeller() {
+        return seller;
+    }
+
+    public void setSeller(Seller seller) {
+        this.seller = seller;
+    }
+
+    public List<Goods> getGoodsList() {
+        return goodsList;
+    }
+
+    public void setGoodsList(List<Goods> goodsList) {
+        this.goodsList = goodsList;
+    }
+
+    public Double getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(Double totalAmount) {
+        this.totalAmount = totalAmount;
+    }
 }
