@@ -2,8 +2,13 @@ package com.duycoding.SaleApplication.Controllers;
 
 import com.duycoding.SaleApplication.Entities.Seller;
 import com.duycoding.SaleApplication.Services.SellerService;
+import com.duycoding.SaleApplication.dto.ApiResponse;
+import com.duycoding.SaleApplication.dto.PaginatedResponse;
+import com.duycoding.SaleApplication.dto.SellerDTO;
 import com.duycoding.SaleApplication.utils.annotation.ApiMessage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +26,10 @@ public class SellerController {
 
     @GetMapping
     @ApiMessage("Get all sellers")
-    public List<Seller> getAllSellers() {
-        return sellerService.getAllSellers();
+    public ResponseEntity
+            <PaginatedResponse<SellerDTO>> getAllSellers(Pageable pageable){
+        PaginatedResponse<SellerDTO> response = sellerService.getAllSellers(pageable);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")

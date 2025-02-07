@@ -3,10 +3,17 @@ package com.duycoding.SaleApplication.Services;
 import com.duycoding.SaleApplication.Entities.Seller;
 import com.duycoding.SaleApplication.Repositories.SellerRepository;
 
+import com.duycoding.SaleApplication.dto.PaginatedResponse;
+import com.duycoding.SaleApplication.dto.SellerDTO;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class SellerService {
@@ -16,8 +23,19 @@ public class SellerService {
         this.sellerRepository = sellerRepository;
     }
 
-    public List<Seller> getAllSellers() {
-        return sellerRepository.findAll();
+    public PaginatedResponse<SellerDTO> getAllSellers(Pageable pageable) {
+        Page<Seller> sellerPage = sellerRepository.findAll(pageable);
+
+        List<SellerDTO> sellerDTOS = sellerPage.stream()
+                .map(seller -> new SellerDTO(seller.getId(), seller.getName(), seller.getEmail()))
+                .toList();
+
+        return new PaginatedResponse<>(
+                sellerPage.getNumber() + 1,
+                sellerPage.getTotalPages(),
+                sellerPage.getTotalElements(),
+                sellerDTOS
+        );
     }
 
     public Seller saveSeller(Seller seller) {
