@@ -2,7 +2,10 @@ package com.duycoding.SaleApplication.Controllers;
 
 import com.duycoding.SaleApplication.Entities.Buyer;
 import com.duycoding.SaleApplication.Services.BuyerService;
+import com.duycoding.SaleApplication.dto.BuyerDTO;
+import com.duycoding.SaleApplication.dto.PaginatedResponse;
 import com.duycoding.SaleApplication.utils.annotation.ApiMessage;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +24,8 @@ public class BuyerController {
 
     @GetMapping
     @ApiMessage("Get all buyers")
-    public List<Buyer> getAllBuyers() {
-        return buyerService.getAllBuyer();
+    public PaginatedResponse<BuyerDTO> getAllBuyers(Pageable pageable) {
+        return buyerService.getAllBuyer(pageable);
     }
 
     @GetMapping("/{id}")

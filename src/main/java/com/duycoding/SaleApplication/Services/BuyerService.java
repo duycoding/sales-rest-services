@@ -1,8 +1,13 @@
 package com.duycoding.SaleApplication.Services;
 
 import com.duycoding.SaleApplication.Entities.Buyer;
+import com.duycoding.SaleApplication.Entities.Seller;
 import com.duycoding.SaleApplication.Repositories.BuyerRepository;
-import com.duycoding.SaleApplication.dto.BuyerResponse;
+import com.duycoding.SaleApplication.dto.BuyerDTO;
+import com.duycoding.SaleApplication.dto.PaginatedResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,8 +22,19 @@ public class BuyerService {
         this.buyerRepository = buyerRepository;
     }
 
-    public List<Buyer> getAllBuyer() {
-        return buyerRepository.findAll();
+    public PaginatedResponse<BuyerDTO> getAllBuyer(Pageable pageable) {
+        Page<Buyer> buyerPage = buyerRepository.findAll(pageable);
+
+        List<BuyerDTO> buyerDTOS = buyerPage.stream()
+                .map(buyer -> new BuyerDTO(buyer.getId(), buyer.getName(), buyer.getEmail()))
+                .toList();
+
+        return new PaginatedResponse<>(
+                buyerPage.getNumber() + 1,
+                buyerPage.getTotalPages(),
+                buyerPage.getTotalElements(),
+                buyerDTOS
+        );
     }
 
     public Buyer createBuyer(Buyer buyer) {
@@ -39,9 +55,9 @@ public class BuyerService {
         return "Deleted";
     }
 
-    public BuyerResponse getBuyer(long id) {
-        Optional<Buyer> buyer = buyerRepository.findById(id);
-        BuyerResponse buyerResponse = new BuyerResponse(buyer.map(Buyer::getName).orElse("Default Name"));
-        return buyerResponse;
+    public BuyerDTO getBuyer(long id) {
+        return buyerRepository.findById(id)
+                .map(buyer -> new BuyerDTO(buyer.getId(), buyer.getEmail(), buyer.getName()))
+                .orElseThrow(() -> new RuntimeException("Buyer with ID " + id + " not found"));
     }
 }

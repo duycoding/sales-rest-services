@@ -58,7 +58,9 @@ public class SellerService {
         sellerRepository.deleteById(id);
     }
 
-    public Optional<Seller> getSeller(long id) {
-        return sellerRepository.findById(id);
+    public Object getSeller(long id) {
+        return sellerRepository.findById(id)
+                .map(seller -> new SellerDTO(seller.getId(), seller.getName(), seller.getEmail()))
+                .orElseThrow(() -> new RuntimeException("Seller with ID " + id + " not found"));
     }
 }
