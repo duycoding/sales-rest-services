@@ -2,6 +2,7 @@ package com.duycoding.SaleApplication.Controllers;
 
 import com.duycoding.SaleApplication.Entities.Invoice;
 import com.duycoding.SaleApplication.Services.InvoiceService;
+import com.duycoding.SaleApplication.utils.annotation.ApiMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ public class InvoiceController {
     }
 
     @PostMapping
+    @ApiMessage("Create an invoice")
     public ResponseEntity<Invoice> createInvoice(
             @RequestParam Long buyerId,
             @RequestParam Long sellerId,
@@ -29,6 +31,7 @@ public class InvoiceController {
     }
 
     @GetMapping
+    @ApiMessage("Update an invoice")
     public ResponseEntity<List<Invoice>> getAllInvoices() {
         List<Invoice> invoices = invoiceService.getAllInvoices();
         return ResponseEntity.status(HttpStatus.OK).body(invoices);

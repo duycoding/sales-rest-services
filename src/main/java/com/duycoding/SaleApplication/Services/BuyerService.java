@@ -2,9 +2,11 @@ package com.duycoding.SaleApplication.Services;
 
 import com.duycoding.SaleApplication.Entities.Buyer;
 import com.duycoding.SaleApplication.Repositories.BuyerRepository;
+import com.duycoding.SaleApplication.dto.BuyerResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BuyerService {
@@ -35,5 +37,11 @@ public class BuyerService {
     public String deleteBuyer(long id) {
         buyerRepository.deleteById(id);
         return "Deleted";
+    }
+
+    public BuyerResponse getBuyer(long id) {
+        Optional<Buyer> buyer = buyerRepository.findById(id);
+        BuyerResponse buyerResponse = new BuyerResponse(buyer.map(Buyer::getName).orElse("Default Name"));
+        return buyerResponse;
     }
 }

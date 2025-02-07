@@ -1,12 +1,12 @@
 package com.duycoding.SaleApplication.Services;
 
-import com.duycoding.SaleApplication.Controllers.SellerController;
 import com.duycoding.SaleApplication.Entities.Seller;
 import com.duycoding.SaleApplication.Repositories.SellerRepository;
 
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SellerService {
@@ -38,5 +38,9 @@ public class SellerService {
 
     public void deleteSeller(Long id) {
         sellerRepository.deleteById(id);
+    }
+
+    public Optional<Seller> getSeller(long id) {
+        return sellerRepository.findById(id);
     }
 }
