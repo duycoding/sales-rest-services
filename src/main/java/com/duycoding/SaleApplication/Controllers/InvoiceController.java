@@ -1,9 +1,9 @@
 package com.duycoding.SaleApplication.Controllers;
 
-import com.duycoding.SaleApplication.Entities.Invoice;
 import com.duycoding.SaleApplication.Services.InvoiceService;
+import com.duycoding.SaleApplication.dto.InvoiceRequestDTO;
+import com.duycoding.SaleApplication.dto.responseDTO.InvoiceResponse;
 import com.duycoding.SaleApplication.utils.annotation.ApiMessage;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,19 +21,18 @@ public class InvoiceController {
 
     @PostMapping
     @ApiMessage("Create an invoice")
-    public ResponseEntity<Invoice> createInvoice(
-            @RequestParam Long buyerId,
-            @RequestParam Long sellerId,
-            @RequestBody List<Long> goodsIds
+    public ResponseEntity<InvoiceResponse> createInvoice(
+            @RequestBody InvoiceRequestDTO request
     ) {
-        Invoice invoice = invoiceService.createInvoice(buyerId, sellerId, goodsIds);
+        InvoiceResponse invoice = invoiceService.createInvoice(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(invoice);
     }
 
+
     @GetMapping
-    @ApiMessage("Update an invoice")
-    public ResponseEntity<List<Invoice>> getAllInvoices() {
-        List<Invoice> invoices = invoiceService.getAllInvoices();
+    @ApiMessage("Get all invoices")
+    public ResponseEntity<List<InvoiceResponse>> getAllInvoices() {
+        List<InvoiceResponse> invoices = invoiceService.getAllInvoices();
         return ResponseEntity.status(HttpStatus.OK).body(invoices);
     }
 }

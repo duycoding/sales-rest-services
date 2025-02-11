@@ -2,6 +2,8 @@ package com.duycoding.SaleApplication.Controllers;
 
 import com.duycoding.SaleApplication.Entities.Goods;
 import com.duycoding.SaleApplication.Services.GoodsService;
+import com.duycoding.SaleApplication.dto.ApiResponse;
+import com.duycoding.SaleApplication.dto.GoodsDTO;
 import com.duycoding.SaleApplication.utils.annotation.ApiMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,12 +26,16 @@ public class GoodsController {
         return goodsService.getAllGoods();
     }
 
-    @PostMapping
+    @PostMapping("/{sellerId}")
     @ApiMessage("Create a goods")
-    public ResponseEntity<Goods> createGoods(@RequestBody Goods goods) {
-        Goods goodsRes = goodsService.createGoods(goods);
-        return ResponseEntity.status(HttpStatus.CREATED).body(goodsRes);
+    public ResponseEntity<Goods> createGoods(
+            @PathVariable Long sellerId,
+            @RequestBody Goods goodsDTO) {
+
+        Goods goodsRes = goodsService.createGoods(sellerId, goodsDTO);
+        return ResponseEntity.ok(goodsRes);
     }
+
 
     @PutMapping("/{id}")
     @ApiMessage("Update a goods")

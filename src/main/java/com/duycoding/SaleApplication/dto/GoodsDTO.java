@@ -1,27 +1,21 @@
-package com.duycoding.SaleApplication.Entities;
+package com.duycoding.SaleApplication.dto;
 
-import jakarta.persistence.*;
-import lombok.*;
-import java.util.List;
-
-@Entity
-//@Getter
-//@Setter
-//@NoArgsConstructor
-//@AllArgsConstructor
-public class Goods {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class GoodsDTO {
     private Long id;
     private String name;
-    private Double price;
-
-    @ManyToOne
-    @JoinColumn(name = "seller_id")
-    private Seller seller;
-
+    private double price;
     private int stock;
     private String category;
+
+    public GoodsDTO() {}
+
+    public GoodsDTO(Long id, String name, double price, int stock, String category) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.stock = stock;
+        this.category = category;
+    }
 
     public Long getId() {
         return id;
@@ -39,20 +33,12 @@ public class Goods {
         this.name = name;
     }
 
-    public Double getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(double price) {
         this.price = price;
-    }
-
-    public Seller getSeller() {
-        return seller;
-    }
-
-    public void setSeller(Seller seller) {
-        this.seller = seller;
     }
 
     public int getStock() {
@@ -71,3 +57,4 @@ public class Goods {
         this.category = category;
     }
 }
+

@@ -1,5 +1,8 @@
 package com.duycoding.SaleApplication.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.List;
@@ -36,6 +39,7 @@ public class Seller {
         this.email = email;
     }
 
+    @JsonIgnoreProperties(value = "seller")
     public List<Goods> getGoods() {
         return goods;
     }
@@ -44,6 +48,7 @@ public class Seller {
         this.goods = goods;
     }
 
+    @JsonIgnore
     @OneToMany(mappedBy = "seller")
     private List<Goods> goods;
 }
