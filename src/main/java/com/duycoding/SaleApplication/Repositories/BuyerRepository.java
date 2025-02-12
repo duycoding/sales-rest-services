@@ -1,7 +1,6 @@
 package com.duycoding.SaleApplication.Repositories;
 
 import com.duycoding.SaleApplication.Entities.Buyer;
-import com.duycoding.SaleApplication.Entities.Seller;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

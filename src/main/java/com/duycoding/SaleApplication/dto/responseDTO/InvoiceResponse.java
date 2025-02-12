@@ -1,5 +1,8 @@
 package com.duycoding.SaleApplication.dto.responseDTO;
 
+import com.duycoding.SaleApplication.Entities.Buyer;
+import com.duycoding.SaleApplication.Entities.InvoiceItem;
+
 import java.time.LocalDateTime;
 import java.util.List;
 

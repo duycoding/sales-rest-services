@@ -2,10 +2,14 @@ package com.duycoding.SaleApplication.Services;
 
 import com.duycoding.SaleApplication.Entities.*;
 import com.duycoding.SaleApplication.Repositories.*;
+import com.duycoding.SaleApplication.dto.GoodsDTO;
 import com.duycoding.SaleApplication.dto.InvoiceItemDTO;
 import com.duycoding.SaleApplication.dto.InvoiceRequestDTO;
+import com.duycoding.SaleApplication.dto.PaginatedResponse;
 import com.duycoding.SaleApplication.dto.responseDTO.InvoiceItemResponse;
 import com.duycoding.SaleApplication.dto.responseDTO.InvoiceResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -101,9 +105,32 @@ public class InvoiceService {
         );
     }
 
-    public List<InvoiceResponse> getAllInvoices() {
-        return invoiceRepository.findAll().stream()
-                .map(this::convertToInvoiceResponse)
-                .collect(Collectors.toList());
+    public PaginatedResponse<InvoiceResponse> getAllInvoices(Pageable pageable) {
+        Page<Invoice> invoicePage = invoiceRepository.findAll(pageable);
+        List<InvoiceResponse> invoiceDTOS = invoicePage.stream()
+                .map(invoice -> new InvoiceResponse(
+                        invoice.getId(),
+                        invoice.getBuyer().getName(),  // Lấy tên người mua thay vì truyền trực tiếp Buyer
+                        invoice.getInvoiceItems().stream()
+                                .distinct()
+                                .map(item -> new InvoiceItemResponse(
+                                        item.getGoods().getName(), // Lấy tên hàng hóa
+                                        item.getQuantity(),
+                                        item.getPriceAtPurchase(),
+                                        item.getQuantity() * item.getPriceAtPurchase() // Tính tổng giá
+                                )).toList(), // Chuyển đổi danh sách InvoiceItem thành InvoiceItemResponse
+                        invoice.getTotalAmount(),
+                        invoice.getCreatedAt()
+                ))
+                .toList();
+
+        return new PaginatedResponse<>(
+                invoicePage.getNumber() + 1,  // Đúng với số trang
+                invoicePage.getTotalPages(),
+                invoicePage.getTotalElements(),
+                invoiceDTOS
+        );
     }
+
+
 }
