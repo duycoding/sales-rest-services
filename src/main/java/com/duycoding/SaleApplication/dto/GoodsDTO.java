@@ -3,15 +3,17 @@ package com.duycoding.SaleApplication.dto;
 public class GoodsDTO {
     private Long id;
     private String name;
+    private Long sellerId;
     private double price;
     private int stock;
     private String category;
 
     public GoodsDTO() {}
 
-    public GoodsDTO(Long id, String name, double price, int stock, String category) {
+    public GoodsDTO(Long id, String name, Long sellerId, double price, int stock, String category) {
         this.id = id;
         this.name = name;
+        this.sellerId = sellerId;
         this.price = price;
         this.stock = stock;
         this.category = category;
@@ -31,6 +33,14 @@ public class GoodsDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Long getSellerId() {
+        return sellerId;
+    }
+
+    public void setSellerId(Long sellerId) {
+        this.sellerId = sellerId;
     }
 
     public double getPrice() {

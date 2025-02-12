@@ -4,7 +4,9 @@ import com.duycoding.SaleApplication.Entities.Goods;
 import com.duycoding.SaleApplication.Services.GoodsService;
 import com.duycoding.SaleApplication.dto.ApiResponse;
 import com.duycoding.SaleApplication.dto.GoodsDTO;
+import com.duycoding.SaleApplication.dto.PaginatedResponse;
 import com.duycoding.SaleApplication.utils.annotation.ApiMessage;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +24,8 @@ public class GoodsController {
 
     @GetMapping
     @ApiMessage("Get all goods")
-    public List<Goods> getAllGoods() {
-        return goodsService.getAllGoods();
+    public PaginatedResponse<GoodsDTO> getAllGoods(Pageable pageable) {
+        return goodsService.getAllGoods(pageable);
     }
 
     @PostMapping("/{sellerId}")

@@ -4,7 +4,11 @@ import com.duycoding.SaleApplication.Entities.Goods;
 import com.duycoding.SaleApplication.Entities.Seller;
 import com.duycoding.SaleApplication.Repositories.GoodsRepository;
 import com.duycoding.SaleApplication.Repositories.SellerRepository;
+import com.duycoding.SaleApplication.dto.BuyerDTO;
 import com.duycoding.SaleApplication.dto.GoodsDTO;
+import com.duycoding.SaleApplication.dto.PaginatedResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,8 +25,19 @@ public class GoodsService {
         this.sellerRepository = sellerRepository;
     }
 
-    public List<Goods> getAllGoods() {
-        return goodsRepository.findAll();
+    public PaginatedResponse<GoodsDTO> getAllGoods(Pageable pageable) {
+        Page<Goods> goodsPage = goodsRepository.findAll(pageable);
+
+        List<GoodsDTO> goodsDTOS = goodsPage.stream()
+                .map(goods -> new GoodsDTO(goods.getId(), goods.getName(), goods.getSeller().getId(), goods.getPrice(), goods.getStock(), goods.getCategory()))
+                .toList();
+
+        return new PaginatedResponse<>(
+                goodsPage.getNumber() + 1,
+                goodsPage.getTotalPages(),
+                goodsPage.getTotalElements(),
+                goodsDTOS
+        );
     }
 
     public Goods createGoods(Long sellerId, Goods request) {

@@ -9,7 +9,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Table(name = "invoices")
+@Table(name = "invoicesIN")
 public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +24,7 @@ public class Invoice {
 
     private Double totalAmount;
 
-    private LocalDateTime createdAt; // ✅ Thêm trường này để lưu thời gian tạo
+    private LocalDateTime createdAt;
 
     public Invoice() {}
 
@@ -78,8 +78,8 @@ public class Invoice {
 
     @PrePersist
     public void prePersist() {
-        this.createdAt = LocalDateTime.now(); // ✅ Gán thời gian tạo trước khi lưu
-        updateTotalAmount(); // ✅ Gọi luôn updateTotalAmount để đảm bảo tính toán đúng
+        this.createdAt = LocalDateTime.now();
+        updateTotalAmount();
     }
 
     public void updateTotalAmount() {
