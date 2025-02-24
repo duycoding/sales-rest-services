@@ -46,29 +46,25 @@ public class GoodsService {
 
         Goods goods = null;
 
-        // Try to find by ID first
         if (request.getId() != null) {
             goods = goodsRepository.findById(request.getId()).orElse(null);
         }
 
-        // If not found by ID, try finding by name
         if (goods == null) {
             List<Goods> goodsList = goodsRepository.findByName(request.getName());
 
             if (goodsList.size() == 1) {
-                goods = goodsList.get(0);  // Use the single found item
+                goods = goodsList.get(0);
             } else if (goodsList.size() > 1) {
                 throw new RuntimeException("Multiple goods found with the same name. Please specify an ID.");
             }
         }
 
         if (goods != null) {
-            // Update existing product
             goods.setStock(goods.getStock() + request.getStock());
             goods.setPrice(request.getPrice());
             goods.setCategory(request.getCategory());
         } else {
-            // Create new product
             goods = new Goods();
             goods.setName(request.getName());
             goods.setPrice(request.getPrice());
@@ -83,14 +79,36 @@ public class GoodsService {
 
 
 
-    public String updateGoods(long id, Goods request) {
+    public GoodsDTO updateGoods(long id, GoodsDTO request) {
         Goods goods = goodsRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Good not found"));
+
         goods.setName(request.getName());
-        goods.setSeller(request.getSeller());
         goods.setPrice(request.getPrice());
-        return "Updated";
+        goods.setStock(request.getStock());
+        goods.setCategory(request.getCategory());
+
+        // Cập nhật seller nếu sellerId hợp lệ
+        if (request.getSellerId() != null) {
+            Seller seller = sellerRepository.findById(request.getSellerId())
+                    .orElseThrow(() -> new RuntimeException("Seller not found"));
+            goods.setSeller(seller);
+        }
+
+        // Lưu lại bản ghi sau khi cập nhật
+        Goods updatedGoods = goodsRepository.save(goods);
+
+        // Chuyển đổi `Goods` thành `GoodsDTO` để trả về đúng format JSON
+        return new GoodsDTO(
+                updatedGoods.getId(),
+                updatedGoods.getName(),
+                updatedGoods.getSeller().getId(),
+                updatedGoods.getPrice(),
+                updatedGoods.getStock(),
+                updatedGoods.getCategory()
+        );
     }
+
 
     public String deleteGoods(long id) {
         goodsRepository.deleteById(id);

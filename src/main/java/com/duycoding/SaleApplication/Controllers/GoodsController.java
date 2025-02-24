@@ -41,9 +41,10 @@ public class GoodsController {
 
     @PutMapping("/{id}")
     @ApiMessage("Update a goods")
-    public ResponseEntity<String> updateGoods(@PathVariable Long id, @RequestBody Goods goods) {
+    public ResponseEntity<GoodsDTO> updateGoods(@PathVariable Long id, @RequestBody GoodsDTO goods) {
         return ResponseEntity.ok(goodsService.updateGoods(id, goods));
     }
+
 
     @DeleteMapping("/{id}")
     @ApiMessage("Delete a goods")

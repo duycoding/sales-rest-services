@@ -50,11 +50,6 @@ public class InvoiceService {
             throw new RuntimeException("Some goods are invalid or unavailable.");
         }
 
-        Set<Seller> sellers = goodsList.stream().map(Goods::getSeller).collect(Collectors.toSet());
-        if (sellers.size() > 1) {
-            throw new RuntimeException("All goods must belong to the same seller");
-        }
-
         // Create Invoice
         Invoice invoice = new Invoice();
         invoice.setBuyer(buyer);
@@ -65,6 +60,14 @@ public class InvoiceService {
                     .filter(g -> g.getId().equals(itemDTO.getGoodsId()))
                     .findFirst()
                     .orElseThrow(() -> new RuntimeException("Invalid goods ID: " + itemDTO.getGoodsId()));
+
+            // Kiểm tra stock trước khi tạo hóa đơn
+            if (goods.getStock() < itemDTO.getQuantity()) {
+                throw new RuntimeException("Not enough stock for goods: " + goods.getName());
+            }
+
+            // Cập nhật stock
+            goods.setStock(goods.getStock() - itemDTO.getQuantity());
 
             double priceAtPurchase = goods.getPrice();
 
@@ -83,8 +86,12 @@ public class InvoiceService {
         invoice = invoiceRepository.save(invoice);
         invoiceItemRepository.saveAll(invoiceItems);
 
+        // Cập nhật lại stock vào database
+        goodsRepository.saveAll(goodsList);
+
         return convertToInvoiceResponse(invoice);
     }
+
 
     private InvoiceResponse convertToInvoiceResponse(Invoice invoice) {
         List<InvoiceItemResponse> itemResponses = invoice.getInvoiceItems().stream()
