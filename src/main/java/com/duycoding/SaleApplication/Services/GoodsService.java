@@ -4,7 +4,6 @@ import com.duycoding.SaleApplication.Entities.Goods;
 import com.duycoding.SaleApplication.Entities.Seller;
 import com.duycoding.SaleApplication.Repositories.GoodsRepository;
 import com.duycoding.SaleApplication.Repositories.SellerRepository;
-import com.duycoding.SaleApplication.dto.BuyerDTO;
 import com.duycoding.SaleApplication.dto.GoodsDTO;
 import com.duycoding.SaleApplication.dto.PaginatedResponse;
 import org.springframework.data.domain.Page;
@@ -12,13 +11,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class GoodsService {
-    public final GoodsRepository goodsRepository;
-
-    public final SellerRepository sellerRepository;
+    private final GoodsRepository goodsRepository;
+    private final SellerRepository sellerRepository;
 
     public GoodsService(GoodsRepository goodsRepository, SellerRepository sellerRepository) {
         this.goodsRepository = goodsRepository;
@@ -26,10 +23,18 @@ public class GoodsService {
     }
 
     public PaginatedResponse<GoodsDTO> getAllGoods(Pageable pageable) {
-        Page<Goods> goodsPage = goodsRepository.findAll(pageable);
+        Page<Goods> goodsPage = goodsRepository.findAllByIsDeletedFalse(pageable);
 
         List<GoodsDTO> goodsDTOS = goodsPage.stream()
-                .map(goods -> new GoodsDTO(goods.getId(), goods.getName(), goods.getSeller().getId(), goods.getPrice(), goods.getStock(), goods.getCategory()))
+                .map(goods -> new GoodsDTO(
+                        goods.getId(),
+                        goods.getName(),
+                        goods.getSeller().getId(),
+                        goods.getPrice(),
+                        goods.getStock(),
+                        goods.getCategory(),
+                        goods.isDeleted()
+                ))
                 .toList();
 
         return new PaginatedResponse<>(
@@ -51,7 +56,7 @@ public class GoodsService {
         }
 
         if (goods == null) {
-            List<Goods> goodsList = goodsRepository.findByName(request.getName());
+            List<Goods> goodsList = goodsRepository.findByNameAndIsDeletedFalse(request.getName());
 
             if (goodsList.size() == 1) {
                 goods = goodsList.get(0);
@@ -64,6 +69,7 @@ public class GoodsService {
             goods.setStock(goods.getStock() + request.getStock());
             goods.setPrice(request.getPrice());
             goods.setCategory(request.getCategory());
+            goods.setDeleted(false);
         } else {
             goods = new Goods();
             goods.setName(request.getName());
@@ -71,13 +77,11 @@ public class GoodsService {
             goods.setStock(request.getStock());
             goods.setCategory(request.getCategory());
             goods.setSeller(seller);
+            goods.setDeleted(false);
         }
 
         return goodsRepository.save(goods);
     }
-
-
-
 
     public GoodsDTO updateGoods(long id, GoodsDTO request) {
         Goods goods = goodsRepository.findById(id)
@@ -88,30 +92,35 @@ public class GoodsService {
         goods.setStock(request.getStock());
         goods.setCategory(request.getCategory());
 
-        // Cập nhật seller nếu sellerId hợp lệ
         if (request.getSellerId() != null) {
             Seller seller = sellerRepository.findById(request.getSellerId())
                     .orElseThrow(() -> new RuntimeException("Seller not found"));
             goods.setSeller(seller);
         }
 
-        // Lưu lại bản ghi sau khi cập nhật
+        if (goods.isDeleted()) {
+            goods.setDeleted(false);
+        }
+
         Goods updatedGoods = goodsRepository.save(goods);
 
-        // Chuyển đổi `Goods` thành `GoodsDTO` để trả về đúng format JSON
         return new GoodsDTO(
-                updatedGoods.getId(),
+                goods.getId(),
                 updatedGoods.getName(),
-                updatedGoods.getSeller().getId(),
+                goods.getSeller().getId(),
                 updatedGoods.getPrice(),
                 updatedGoods.getStock(),
                 updatedGoods.getCategory()
         );
     }
 
-
     public String deleteGoods(long id) {
-        goodsRepository.deleteById(id);
-        return "Deleted";
+        Goods goods = goodsRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Goods not found"));
+
+        goods.setDeleted(true); // Đánh dấu là đã xóa
+        goodsRepository.save(goods);
+
+        return "Deleted (soft delete)";
     }
 }

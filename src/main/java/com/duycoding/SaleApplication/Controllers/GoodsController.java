@@ -28,6 +28,7 @@ public class GoodsController {
         return goodsService.getAllGoods(pageable);
     }
 
+
     @PostMapping("/{sellerId}")
     @ApiMessage("Create a goods")
     public ResponseEntity<Goods> createGoods(
@@ -38,7 +39,6 @@ public class GoodsController {
         return ResponseEntity.ok(goodsRes);
     }
 
-
     @PutMapping("/{id}")
     @ApiMessage("Update a goods")
     public ResponseEntity<GoodsDTO> updateGoods(@PathVariable Long id, @RequestBody GoodsDTO goods) {
@@ -47,9 +47,19 @@ public class GoodsController {
 
 
     @DeleteMapping("/{id}")
-    @ApiMessage("Delete a goods")
-    public ResponseEntity<Void> deleteGoods(@PathVariable("id") Long id) {
-        goodsService.deleteGoods(id);
-        return ResponseEntity.noContent().build();
+    @ApiMessage("Soft delete a goods")
+    public ResponseEntity<ApiResponse<String>> deleteGoods(@PathVariable("id") Long id) {
+        String message = goodsService.deleteGoods(id);
+
+        ApiResponse<String> response = new ApiResponse<>(
+                200,
+                null,
+                "Goods successfully soft deleted",
+                message
+        );
+
+        return ResponseEntity.ok(response);
     }
+
+
 }

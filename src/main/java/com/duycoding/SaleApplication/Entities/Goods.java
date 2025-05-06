@@ -1,14 +1,8 @@
 package com.duycoding.SaleApplication.Entities;
 
 import jakarta.persistence.*;
-import lombok.*;
-import java.util.List;
 
 @Entity
-//@Getter
-//@Setter
-//@NoArgsConstructor
-//@AllArgsConstructor
 public class Goods {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +16,15 @@ public class Goods {
 
     private int stock;
     private String category;
+    private boolean isDeleted = false;
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
 
     public Long getId() {
         return id;
